@@ -38,13 +38,16 @@ def lambda_handler(event, context):
         # 会話履歴があれば、そこから最後のメッセージを含めてコンテキストを提供
         prompt = message
         if conversation_history:
-            # 会話の履歴を文字列として連結（簡単な方法）
+            # 会話の履歴を文字列として連結
             context = ""
             for msg in conversation_history:
                 role = msg["role"]
                 content = msg["content"]
-                context += f"{role}: {content}\n"
-            prompt = f"{context}\nuser: {message}"
+                if role == "user":
+                    context += f"Q: {content}\n"
+                elif role == "assistant":
+                    context += f"A: {content}\n"
+            prompt = f"{context}Q: {message}"
         
         request_payload = {
             "prompt": prompt,
